@@ -3,14 +3,14 @@ import subprocess
 
 import prefect
 
+import datateer.tasks.util
+
 class DbtTask(prefect.Task):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     
-    def run(self, profile_path=None) -> str:
+    def run(self) -> str:
         dbt_command = [f'dbt', 'run']
-        if profile_path is not None:
-            raise 'profile_path is not yet implemented'
         
         self.logger.debug(f'running dbt')
 
