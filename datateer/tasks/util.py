@@ -3,13 +3,9 @@ import os
 import prefect
 
 def get_root_dir():
-    env = os.getenv('DATATEER_ENV')
-    if env is None or env == '' or env != 'local':
-        app_root = '/datateer/'
-    else:
+    if os.getenv('DATATEER_ENV').startswith('local'):
         app_root = os.getcwd()
-    # logger = prefect.context.get('logger')
-    # logger.info(f'DATATEER_ENV = {os.getenv("DATATEER_ENV")}')
-    # logger.info(f'app_root = {app_root}')
+    else:
+        app_root = '/datateer/'
     return app_root
     

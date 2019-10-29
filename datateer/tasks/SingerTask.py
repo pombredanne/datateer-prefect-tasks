@@ -10,7 +10,7 @@ class SingerTask(prefect.Task):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def run(self, tap, target, tap_config_path=None, tap_catalog_path=None, tap_state_path=None, target_config_path=None, target_state_path=None) -> int:
+    def run(self, tap=None, target=None, tap_config_path=None, tap_catalog_path=None, tap_state_path=None, target_config_path=None, target_state_path=None) -> int:
         root_dir = get_root_dir()
 
         self.logger.info(f'root_dir: {root_dir}')
