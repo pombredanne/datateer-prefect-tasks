@@ -37,11 +37,10 @@ class SingerTask(prefect.Task):
         self.logger.info(f'target command: {target_command}')
 
         try:
-            input_stream = subprocess.Popen(tap_command, stdout=subprocess.PIPE)
+            input_stream = subprocess.Popen(tap_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, )
             output = subprocess.check_output(target_command, stdin=input_stream.stdout)
-            input_stream.wait()
-            self.logger.info(input_stream)
-            self.logger.info(output)
+            out, err = input_stream.communicate() # connects to the stdout and stderr streams and receives their output. "out" will be empty because it was already streamed to the check_output command above. "err" contains informative logs from singer
+            self.logger.info(err.decode('utf-8')) # this logs all the stderr info from singer. Singer uses stderr for informational messaging--more than just errors
         except subprocess.CalledProcessError as exc:
             msg = f'Command failed with exit code {exc.returncode}{os.linesep}{exc.output}'
             self.logger.critical(f'Command failed with exit code {exc.returncode}')
