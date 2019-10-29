@@ -39,8 +39,9 @@ class SingerTask(prefect.Task):
         try:
             input_stream = subprocess.Popen(tap_command, stdout=subprocess.PIPE)
             output = subprocess.check_output(target_command, stdin=input_stream.stdout)
-            self.logger.info(output)
             input_stream.wait()
+            self.logger.info(input_stream)
+            self.logger.info(output)
         except subprocess.CalledProcessError as exc:
             msg = f'Command failed with exit code {exc.returncode}{os.linesep}{exc.output}'
             self.logger.critical(f'Command failed with exit code {exc.returncode}')
