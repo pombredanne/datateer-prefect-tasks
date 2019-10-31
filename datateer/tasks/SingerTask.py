@@ -51,7 +51,7 @@ class SingerTask(prefect.Task):
         except subprocess.CalledProcessError as exc:
             msg = f'Command failed with exit code {exc.returncode}{os.linesep}{exc.output}'
             self.logger.critical(f'Command failed with exit code {exc.returncode}')
-            self.logger.critical(exc.output.decode('utf-8'))
+            self.logger.critical(exc.output if type(exc.output) is str else exc.output.decode('utf-8'))
             raise prefect.engine.signals.FAIL(msg) from None
         return output
     
