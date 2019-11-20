@@ -6,17 +6,34 @@ import prefect
 
 from datateer.tasks.util import get_root_dir
 
+
+def generate_command_list(operations, models=[]):
+    commands = []
+
+    if 'debug' in operations:
+        commands.append(['dbt', 'debug'])
+    if 'deps' in operations:
+        commands.append(['dbt', 'deps'])
+    if 'run' in operations:
+        c = ['dbt', 'run']
+        if len(models):
+            c.extend(['--models', *models])
+        commands.append(c)
+    if 'test' in operations:
+        c = ['dbt', 'test']
+        if len(models):
+            c.extend(['--models', *models])
+        commands.append(c)
+
+    return commands
+
 class DbtTask(prefect.Task):
-    def __init__(self, run_data=True, run_tests=True, *args, **kwargs):
+    def __init__(self, operations, models=[], *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.run_data = run_data
-        self.run_tests = run_tests
+        self.operations = operations
+        self.models = models
     
     def run(self) -> str:
-        dbt_deps = ['dbt', 'deps']
-        dbt_debug = ['dbt', 'debug']
-        dbt_run = ['dbt', 'run']
-        dbt_test = ['dbt', 'test']
         
         if (os.getenv('DBT_PROFILES_DIR')):
             self.logger.info(f'dbt is using profiles directory {os.getenv("DBT_PROFILES_DIR")}')
@@ -26,19 +43,9 @@ class DbtTask(prefect.Task):
         self.logger.info(f'cwd is {os.getcwd()}')
 
         try:
-            if self.run_data:
-                self.logger.info('Running dbt deps')
-                output = subprocess.check_output(dbt_deps, stderr=subprocess.STDOUT)
-                self.logger.info(output.decode('utf-8'))
-                self.logger.info('Running dbt debug')
-                output = subprocess.check_output(dbt_debug, stderr=subprocess.STDOUT)
-                self.logger.info(output.decode('utf-8'))
-                self.logger.info('Running dbt run')
-                output = subprocess.check_output(dbt_run, stderr=subprocess.STDOUT)
-                self.logger.info(output.decode('utf-8'))
-            if self.run_tests:
-                self.logger.info('Running dbt test')
-                output = subprocess.check_output(dbt_test, stderr=subprocess.STDOUT)
+            for command in generate_command_list(self.operations, self.models):
+                self.logger.info(f'Running {command} from {os.getcwd()}')
+                output = subprocess.check_output(command, stderr=subprocess.STDOUT)
                 self.logger.info(output.decode('utf-8'))
 
             # input_stream.wait()

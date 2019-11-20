@@ -9,8 +9,8 @@ import prefect
 
 import datateer.tasks.util
 
-# def sample(x, y):
-#     return x + y
+def sample(x, y):
+    return x + y
 
 class EnsureConfig(prefect.Task):
     def __init__(self, *args, **kwargs):

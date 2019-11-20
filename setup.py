@@ -9,7 +9,7 @@ setup(name='datateer_prefect_tasks',
       license='None',
       packages=['datateer.tasks'],
       install_requires=[
-          'prefect==0.7.1'
+          'prefect==0.7.2'
       ],
 
       zip_safe=False)
