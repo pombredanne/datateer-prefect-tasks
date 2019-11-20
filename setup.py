@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='datateer_prefect_tasks',
-      version='0.1.9',
+      version='0.1.10',
       description='Prefect Pipeline Tasks by Datateer',
       url='http://github.com/aroder/datateer-pipeline-tasks',
       author='Datateer',
