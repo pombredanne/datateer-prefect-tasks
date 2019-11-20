@@ -53,7 +53,7 @@ class DbtTask(prefect.Task):
             msg = f'Command failed with exit code {exc.returncode}{os.linesep}{exc.output}'
             self.logger.critical(f'Command failed with exit code {exc.returncode}')
             self.logger.critical(exc.output.decode('utf-8'))
-            raise prefect.engine.signals.FAIL(msg) from None
+            raise prefect.engine.signals.FAIL(msg[:1000]) from None
 
         os.chdir(original_dir)
 
