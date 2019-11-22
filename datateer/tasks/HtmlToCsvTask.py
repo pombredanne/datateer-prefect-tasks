@@ -1,3 +1,4 @@
+from datetime import datetime
 import csv
 import re
 # import platform
@@ -53,17 +54,22 @@ class HtmlToCsvTask(prefect.Task):
         return rows
     
     def write_csv_to_s3(self, headers, rows):
-        target = f'{self.target_bucket}/{self.target_key}'
+        key = self.construct_s3_key()
+        target = f'{self.target_bucket}/{key}'
         self.logger.info(f'writing to S3 {target}')
         body = self.construct_csv(headers, rows)
         s3 = boto3.resource('s3')
-        object = s3.Object(self.target_bucket, self.target_key)
+        object = s3.Object(self.target_bucket, key)
         res = object.put(Body=body)
         self.logger.info(f'finished writing to {target}')
         return target
 
     def construct_csv(self, headers, rows):
         return ','.join(headers) + '\n' + '\n'.join([','.join(row) for row in rows]) 
+
+    def construct_s3_key(self):
+        '''Replace any supported named tokens. Supports {date}'''
+        return self.target_key.format(date=datetime.now().strftime("%Y-%m-%d"))
 
     def validate(self):
         if not self.source_url:

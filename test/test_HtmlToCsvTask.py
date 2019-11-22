@@ -20,7 +20,7 @@ FIELD_NAMES_PATTERN = '<tr><th>(.*?)<\/th><th>(.*?)<\/th><\/tr>'
 ROW_PATTERN = '<tr><td>(.*?)<\/td><td>(.*?)<\/td><\/tr>'
 SOURCE_URL = 'https://unifirst7s.avature.net/PublicLists/miNmEldxHgTvu6cmjz7FbXZhBbiu4q14'
 TARGET_BUCKET = 'dev-mrp-pipeline-raw'
-TARGET_KEY = f'raw-data/ufst/avature/crm_req_active/business_date={datetime.now().strftime("%Y-%m-%d")}/testfile.csv'
+TARGET_KEY = 'raw-data/ufst/avature/crm_req_active/business_date={date}/{date}.csv'
 
 
 def instantiate_task():
@@ -62,6 +62,11 @@ def test_construct_csv():
     assert 'header1,header2' in body
     assert 'field1,field2' in body
     assert 'field3,field4' in body
+
+def test_construct_s3_key():
+    task = instantiate_task()
+    key = task.construct_s3_key()
+    assert key == f'raw-data/ufst/avature/crm_req_active/business_date={datetime.now().strftime("%Y-%m-%d")}/{datetime.now().strftime("%Y-%m-%d")}.csv'
 
 def test_run():
     task = instantiate_task()
